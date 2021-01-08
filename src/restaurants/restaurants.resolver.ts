@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
+import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Restaurant } from './restaurants.entity';
 import { RestaurantService } from './restaurants.service';
 
@@ -22,5 +23,14 @@ export class RestaurantResolver {
       console.log(e);
       return false;
     }
+  }
+
+  @Mutation((returns) => Boolean)
+  async updateRestaurant(
+    // updateRestaurnDto가 inputtype이라면 args('input') 이런식으로 써줘야하고
+    // argsType이라면 args() 이렇게 비워놓으면 된다.
+    @Args('input') updateRestaurantDto: UpdateRestaurantDto,
+  ) {
+    return true;
   }
 }
