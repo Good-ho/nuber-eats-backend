@@ -30,7 +30,13 @@ export class RestaurantResolver {
     // updateRestaurnDto가 inputtype이라면 args('input') 이런식으로 써줘야하고
     // argsType이라면 args() 이렇게 비워놓으면 된다.
     @Args('input') updateRestaurantDto: UpdateRestaurantDto,
-  ) {
-    return true;
+  ): Promise<boolean> {
+    try {
+      await this.restaurnatService.updateRestaurant(updateRestaurantDto);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 }

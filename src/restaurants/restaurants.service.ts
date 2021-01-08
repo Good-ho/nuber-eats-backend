@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
+import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
 import { Restaurant } from './restaurants.entity';
 
 @Injectable()
@@ -28,5 +29,11 @@ export class RestaurantService {
 
     // repository create는 entity를 instance를 만드는 것이고 db에 저장하려면 save필요.
     return this.restaurants.save(newRestaurant);
+  }
+
+  updateRestaurant(updateRestaurantDto: UpdateRestaurantDto) {
+    return this.restaurants.update(updateRestaurantDto.id, {
+      ...updateRestaurantDto.data,
+    });
   }
 }
