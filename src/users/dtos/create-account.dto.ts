@@ -1,5 +1,4 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { string } from 'joi';
 import { User } from '../entities/user.entity';
 
 @InputType()
