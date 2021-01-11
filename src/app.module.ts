@@ -52,12 +52,12 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
   controllers: [],
   providers: [],
 })
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(JwtMiddleware).forRoutes({
-//       path: '/graphql',
-//       method: RequestMethod.ALL,
-//     });
-//   }
-// }
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/graphql',
+      method: RequestMethod.ALL,
+    });
+  }
+}
+// export class AppModule {}
