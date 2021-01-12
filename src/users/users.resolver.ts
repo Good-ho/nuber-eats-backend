@@ -1,5 +1,7 @@
+import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { boolean } from 'joi';
+import { AuthGuard } from 'src/auth/auth.guard';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -50,11 +52,16 @@ export class UsersResolver {
     }
   }
 
+  // @Query((returns) => User)
+  // me(@Context() context) {
+  //   if (context.user) {
+  //     return context.user;
+  //   }
+  // }
+
+  // 위와 같이 me를 구현해도되지만, me에서 직접 context 인자 전달은 좋지 못한 방식이다.
+  // 따라서 guard를 활용해보자.
   @Query((returns) => User)
-  me(@Context() context) {
-    // console.log(context);
-    if (context.user) {
-      return context.user;
-    }
-  }
+  @UseGuards(AuthGuard)
+  me() {}
 }
