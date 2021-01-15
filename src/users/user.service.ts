@@ -77,7 +77,20 @@ export class UsersService {
     return this.user.findOne({ id });
   }
 
-  async editProfile(userId: number, { email, password }: EditProfileInput) {
-    return this.user.update({ id: userId }, { email, password });
+  // 아래와 같이 {email, password}로 받으면, resolver에서 password값을 넘겨주지 않으면 password를 undefined로 만들어버림
+  // db는 password가 null or undefined로 전달되면 error가 나옴!
+  // async editProfile(userId: number, { email, password }: EditProfileInput) {
+  async editProfile(
+    userId: number,
+    { email, password }: EditProfileInput,
+  ): Promise<User> {
+    const user = await this.user.findOne(userId);
+    if (email) {
+      user.email = email;
+    }
+    if (password) {
+      user.password = password;
+    }
+    return this.user.save(user);
   }
 }
