@@ -14,7 +14,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly user: Repository<User>,
     @InjectRepository(Verification)
-    private readonly verification: Repository<Verification>,
+    private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -35,7 +35,7 @@ export class UsersService {
       const user = await this.user.save(
         this.user.create({ email, password, role }),
       );
-      await this.verification.save(this.verification.create({ user }));
+      await this.verifications.save(this.verifications.create({ user }));
       return { ok: true };
     } catch (e) {
       //make error
@@ -94,11 +94,23 @@ export class UsersService {
     if (email) {
       user.email = email;
       user.verified = false;
-      await this.verification.save(this.verification.create({ user }));
+      await this.verifications.save(this.verifications.create({ user }));
     }
     if (password) {
       user.password = password;
     }
     return this.user.save(user);
+  }
+
+  async verifyEmail(code: string): Promise<boolean> {
+    const verification = await this.verifications.findOne(
+      { code },
+      { relations: ['user'] },
+    );
+    if (verification) {
+      verification.user.verified = true;
+      this.user.save(verification.user);
+    }
+    return false;
   }
 }
