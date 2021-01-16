@@ -7,11 +7,14 @@ import { User } from './entities/user.entity';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput } from './dtos/edit-profile.dto';
+import { Verification } from './entities/verification.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly user: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verification: Repository<Verification>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -29,7 +32,10 @@ export class UsersService {
         // make error
         return { ok: false, error: 'already exists' };
       }
-      await this.user.save(this.user.create({ email, password, role }));
+      const user = await this.user.save(
+        this.user.create({ email, password, role }),
+      );
+      await this.verification.save(this.verification.create({ user }));
       return { ok: true };
     } catch (e) {
       //make error
@@ -87,6 +93,8 @@ export class UsersService {
     const user = await this.user.findOne(userId);
     if (email) {
       user.email = email;
+      user.verified = false;
+      await this.verification.save(this.verification.create({ user }));
     }
     if (password) {
       user.password = password;
