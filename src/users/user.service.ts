@@ -13,6 +13,7 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +22,7 @@ export class UsersService {
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   //createAccount(createAccountInput:CreateAccountInput){
@@ -40,9 +42,11 @@ export class UsersService {
       const findUser = await this.user.save(
         this.user.create({ email, password, role }),
       );
-      await this.verifications.save(
+      const verification = await this.verifications.save(
         this.verifications.create({ user: findUser }),
       );
+
+      this.mailService.sendVerificationEmail(findUser.email, verification.code);
       return { ok: true };
     } catch (e) {
       //make error
@@ -111,12 +115,18 @@ export class UsersService {
     { email, password }: EditProfileInput,
   ): Promise<EditProfileOutput> {
     try {
+      console.log(userId);
       const findUser = await this.user.findOne(userId);
       if (email) {
         findUser.email = email;
         findUser.verified = false;
-        await this.verifications.save(
+        const verification = await this.verifications.save(
           this.verifications.create({ user: findUser }),
+        );
+
+        this.mailService.sendVerificationEmail(
+          findUser.email,
+          verification.code,
         );
       }
 
