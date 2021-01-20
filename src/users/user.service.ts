@@ -59,25 +59,25 @@ export class UsersService {
     // 2. check if the password is correct
     // 3. make a JWT and give it to the user
     try {
-      const user = await this.user.findOne(
+      const findUser = await this.user.findOne(
         { email },
         { select: ['id', 'password'] },
       );
-      if (!user) {
+      if (!findUser) {
         return {
           ok: false,
           error: 'User Not Found',
         };
       }
 
-      const passwordCorrect = await user.checkPassword(password);
+      const passwordCorrect = await findUser.checkPassword(password);
       if (!passwordCorrect) {
         return {
           ok: false,
           error: 'Wrong Password',
         };
       }
-      const token = this.jwtService.sign(user.id);
+      const token = this.jwtService.sign(findUser.id);
       return {
         ok: true,
         token,
