@@ -12,6 +12,7 @@ const mockRepository = () => ({
   create: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
+  findOneOrFail: jest.fn(),
 });
 
 const mockJwtService = {
@@ -170,7 +171,25 @@ describe('UserService', () => {
     });
   });
 
-  it.todo('findById');
+  describe('findById', () => {
+    const findByIdArgs = {
+      id: 1,
+    };
+    it('should find an existing user', async () => {
+      userRepository.findOneOrFail.mockResolvedValue(findByIdArgs);
+      const result = await service.findById(1);
+      expect(result).toEqual({ ok: true, user: findByIdArgs });
+    });
+
+    it('should fail if no user found', async () => {
+      userRepository.findOneOrFail.mockRejectedValue(new Error());
+      const result = await service.findById(1);
+      expect(result).toEqual({
+        ok: false,
+        error: 'User Not Found',
+      });
+    });
+  });
   it.todo('editProfile');
   it.todo('verifyEmail');
 });
