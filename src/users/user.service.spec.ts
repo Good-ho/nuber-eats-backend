@@ -15,7 +15,7 @@ const mockRepository = () => ({
 });
 
 const mockJwtService = {
-  sign: jest.fn(),
+  sign: jest.fn(() => 'sign-token-baby'),
   verify: jest.fn(),
 };
 
@@ -30,8 +30,11 @@ describe('UserService', () => {
   let emailService: MailService;
   let userRepository: MockRepository<User>;
   let verificationRepository: MockRepository<Verification>;
+  let jwtService: JwtService;
 
-  beforeAll(async () => {
+  // 기존에는 beforeall로 하였으나, beforeall로 하면 테스트전에 만들어진 mock이 공유되므로
+  // call time expect시 call count가 쌓여버림. forech로 test마다 호출하여 solve.
+  beforeEach(async () => {
     const modules = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -55,6 +58,7 @@ describe('UserService', () => {
     }).compile();
     service = modules.get<UsersService>(UsersService);
     emailService = modules.get<MailService>(MailService);
+    jwtService = modules.get<JwtService>(JwtService);
     userRepository = modules.get(getRepositoryToken(User));
     verificationRepository = modules.get(getRepositoryToken(Verification));
   });
@@ -142,6 +146,27 @@ describe('UserService', () => {
         ok: false,
         error: 'User Not Found',
       });
+    });
+
+    it('should fail if the password is wrong', async () => {
+      const mockUser = {
+        checkPassword: jest.fn(() => Promise.resolve(false)),
+      };
+      userRepository.findOne.mockResolvedValue(mockUser);
+      const result = await service.login(loginArgs);
+      expect(result).toEqual({ ok: false, error: 'Wrong Password' });
+    });
+
+    it('should return token if password correct', async () => {
+      const mockUser = {
+        id: 1,
+        checkPassword: jest.fn(() => Promise.resolve(true)),
+      };
+      userRepository.findOne.mockResolvedValue(mockUser);
+      const result = await service.login(loginArgs);
+      expect(jwtService.sign).toHaveBeenCalledTimes(1);
+      expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Number));
+      expect(result).toEqual({ ok: true, token: 'sign-token-baby' });
     });
   });
 
