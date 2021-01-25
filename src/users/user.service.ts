@@ -163,7 +163,7 @@ export class UsersService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: 'Verification Not Found',
       };
     }
   }
