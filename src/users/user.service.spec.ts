@@ -230,6 +230,30 @@ describe('UserService', () => {
         newVerification.code,
       );
     });
+
+    it('should change password', async () => {
+      const editProfileArgs = {
+        userId: 1,
+        input: { password: 'newPassword' },
+      };
+
+      userRepository.findOne.mockResolvedValue({ password: 'oldPassword' });
+
+      const result = await service.editProfile(
+        editProfileArgs.userId,
+        editProfileArgs.input,
+      );
+
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledWith(editProfileArgs.input);
+      expect(result).toEqual({ ok: true });
+    });
+
+    it('should fail on exception', async () => {
+      userRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.editProfile(1, { email: 'bs@new.com' });
+      expect(result).toEqual({ ok: false, error: "Can't not find User" });
+    });
   });
 
   it.todo('verifyEmail');
