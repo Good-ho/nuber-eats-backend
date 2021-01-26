@@ -7,7 +7,9 @@ import * as jwt from 'jsonwebtoken';
 export class JwtService {
   constructor(
     @Inject(CONFIG_OPTIONS) private readonly options: JwtModuleOptions, // private readonly configService:ConfigService
-  ) {}
+  ) {
+    // console.log(options);
+  }
 
   sign(userId: number): string {
     // configservice 에서 secretkey를 가져와도 되지만, provider를 직접 만들어 사용할 수 있다는 관점에서 써봄
