@@ -114,11 +114,12 @@ export class UsersService {
     { email, password }: EditProfileInput,
   ): Promise<EditProfileOutput> {
     try {
-      console.log(userId);
+      // console.log(userId);
       const findUser = await this.user.findOne(userId);
       if (email) {
         findUser.email = email;
         findUser.verified = false;
+        await this.verifications.delete({ user: { id: findUser.id } });
         const verification = await this.verifications.save(
           this.verifications.create({ user: findUser }),
         );
@@ -138,6 +139,7 @@ export class UsersService {
         ok: true,
       };
     } catch (error) {
+      // console.log(error);
       return {
         ok: false,
         error: "Can't not find User",
