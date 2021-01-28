@@ -1,6 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
-import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import {
+  CreateRestaurantInput,
+  CreateRestaurantOutput,
+} from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurants.entity';
 import { RestaurantService } from './restaurants.service';
 
@@ -8,35 +12,14 @@ import { RestaurantService } from './restaurants.service';
 export class RestaurantResolver {
   constructor(private readonly restaurnatService: RestaurantService) {}
 
-  @Query((returns) => [Restaurant])
-  myRestaurant(): Promise<Restaurant[]> {
-    return this.restaurnatService.getAll();
-  }
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => CreateRestaurantOutput)
   async createRestaurants(
-    @Args('input') createRestaurantInput: CreateRestaurantDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurnatService.createRestaurant(createRestaurantInput);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }
-
-  @Mutation((returns) => Boolean)
-  async updateRestaurant(
-    // updateRestaurnDto가 inputtype이라면 args('input') 이런식으로 써줘야하고
-    // argsType이라면 args() 이렇게 비워놓으면 된다.
-    @Args('input') updateRestaurantDto: UpdateRestaurantDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurnatService.updateRestaurant(updateRestaurantDto);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    @AuthUser() authUser: User,
+    @Args('input') createRestaurantInput: CreateRestaurantInput,
+  ): Promise<CreateRestaurantOutput> {
+    return this.restaurnatService.createRestaurant(
+      authUser,
+      createRestaurantInput,
+    );
   }
 }
