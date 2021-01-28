@@ -26,10 +26,12 @@ export class JwtMiddleware implements NestMiddleware {
         // console.log(decoded['id']);
 
         try {
-          const user = await this.userService.findById(decoded['id']);
+          const { user, ok } = await this.userService.findById(decoded['id']);
           // console.log(user);
           // headers에서 user를 request로 보낼수 있는 middleware구현완료
-          req['user'] = user;
+          if (ok) {
+            req['user'] = user;
+          }
         } catch (error) {}
       }
     }
