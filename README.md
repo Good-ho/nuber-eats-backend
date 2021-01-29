@@ -19,3 +19,5 @@ The Backend of Number Eats!
 - See Profile
 - Edit Profile
 - Verify Email
+
+- add recap
