@@ -3,6 +3,7 @@ import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { boolean } from 'joi';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Role } from 'src/auth/role.decorator';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -45,13 +46,13 @@ export class UsersResolver {
   // 위와 같이 me를 구현해도되지만, me에서 직접 context 인자 전달은 좋지 못한 방식이다.
   // 따라서 guard를 활용해보자.
   @Query((returns) => User)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   me(@AuthUser() authUser: User) {
     // console.log(authUser);
     return authUser;
   }
 
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   @Query((returns) => UserProfileOutput)
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
