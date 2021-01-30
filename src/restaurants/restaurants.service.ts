@@ -73,7 +73,7 @@ export class RestaurantService {
         );
       }
 
-      await this.categories.save([
+      await this.restaurants.save([
         {
           id: editRestaurantInput.restaurantID,
           ...editRestaurantInput,
