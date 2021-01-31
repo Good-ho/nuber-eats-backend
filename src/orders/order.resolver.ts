@@ -10,12 +10,14 @@ import { OrderService } from './order.service';
 export class OrderResolver {
   constructor(private readonly orderService: OrderService) {}
 
-  @Mutation(returns => CreateOrderOutput)
+  @Mutation((returns) => CreateOrderOutput)
   @Role(['Client'])
-  createOrder(
-      @AuthUser() customer:User
-      @Args('input') createOrderInput:CreateOrderInput
-  ):Promise<CreateOrderOutput>{
-
+  async createOrder(
+    @AuthUser() customer: User,
+    @Args('input') createOrderInput: CreateOrderInput,
+  ): Promise<CreateOrderOutput> {
+    return {
+      ok: true,
+    };
   }
 }
