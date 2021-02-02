@@ -33,18 +33,48 @@ export class OrderService {
       };
     }
 
-    items.forEach(async (item) => {
+    for (const item of items) {
       const dish = await this.dishes.findOne(item.dishId);
       if (!dish) {
-        // abort
+        return {
+          ok: false,
+          error: 'Dish Not found',
+        };
       }
-      await this.orderItems.save(
-        this.orderItems.create({
-          dish,
-          options: item.options,
-        }),
-      );
-    });
+
+      // dishOption에서 유저가 보낸 options이 존재하는지 check
+      for (const itemOptions of item.options) {
+        // console.log(itemOptions);
+        // user가 보낸 option이 dishoption db에 존재하는지 확인
+        // 이게 필요한 이유? 돈계산하기 위해.
+        const dishOption = dish.options.find(
+          (dishOption) => dishOption.name === itemOptions.name,
+        );
+        if (dishOption) {
+          // dishoptions에 extra가 있을 수 있고, dishoptions -> choice에 extra가 있을 수 있으니 둘다 체크.
+          if (dishOption.extra) {
+            console.log(dishOption.extra);
+          } else {
+            const dishOptionsChoice = dishOption.choices.find(
+              (optionChoice) => optionChoice.name === itemOptions.choice,
+            );
+            // console.log(dishOptionsChoice);
+            if (dishOptionsChoice) {
+              if (dishOptionsChoice.extra) {
+                console.log(`USD + ${dishOptionsChoice.extra}`);
+              }
+            }
+          }
+        }
+      }
+
+      // await this.orderItems.save(
+      //   this.orderItems.create({
+      //     dish,
+      //     options: item.options,
+      //   }),
+      // );
+    }
     // const order = await this.orders.save(
     //   this.orders.create({
     //     customer,
