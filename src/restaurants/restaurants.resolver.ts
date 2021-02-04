@@ -10,6 +10,10 @@ import {
 } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
+import {
+  EditOrderInput,
+  EditOrderOutput,
+} from 'src/orders/dtos/edit-order.dto';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';

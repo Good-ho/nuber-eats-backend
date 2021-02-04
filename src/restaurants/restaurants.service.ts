@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  EditOrderInput,
+  EditOrderOutput,
+} from 'src/orders/dtos/edit-order.dto';
 import { EditProfileOutput } from 'src/users/dtos/edit-profile.dto';
 import { User } from 'src/users/entities/user.entity';
 import { ILike, Like, Repository } from 'typeorm';
