@@ -54,4 +54,23 @@ export class OrderResolver {
   ): Promise<EditOrderOutput> {
     return this.orderService.editOrder(owner, editOrderInput);
   }
+
+  @Mutation((returns) => Boolean)
+  async subScriptionReady(@Args('potatoId') potatoId: number) {
+    await this.pubSub.publish('lalala', {
+      readyPotato: potatoId,
+    });
+    return true;
+  }
+
+  @Subscription((returns) => String, {
+    filter: ({ readyPotato }, { potatoId }) => {
+      console.log(readyPotato, potatoId);
+      return readyPotato === potatoId;
+    },
+  })
+  @Role(['Any'])
+  orderSubscription(@Args('potatoId') potatoId: number) {
+    return this.pubSub.asyncIterator('lalala');
+  }
 }
